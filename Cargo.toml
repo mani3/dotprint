@@ -6,5 +6,5 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rust-embed="8.4.0"
-bdf_parser = {git = "https://github.com/mani3/bdf_parser"}
+rust-embed = "8.4.0"
+bdf_parser = { git = "https://github.com/mani3/bdf_parser" }
