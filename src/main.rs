@@ -13,26 +13,25 @@ struct Assets;
 
 #[derive(Parser)]
 #[command(
-    name = "bdf-renderer",
-    version = "0.1.0",
-    author = "Your Name",
-    about = "BDF フォントを用いたテキストレンダリング CLI ツール"
+    name = "dotprint",
+    version = env!("CARGO_PKG_VERSION"),
+    author = env!("CARGO_PKG_AUTHORS"),
+    about = "Render text using a bitmap font",
 )]
 struct Cli {
-    /// 表示するテキスト
+    /// Rendering text
     text: String,
 
-    /// レンダリングに使用するピクセル文字 (デフォルト: "＠")
+    /// Rendering pixel character (default: "＠")
     #[arg(default_value = "＠")]
     pixel: String,
 
-    /// レンダリングに使用するスペース文字 (デフォルト: "　")
+    /// Rendering space character (default: "　")
     #[arg(default_value = "　")]
     space: String,
 }
 
 fn main() -> io::Result<()> {
-    // Clap による引数パース（--help, --version は自動で対応される）
     let args = Cli::parse();
 
     // 埋め込みフォントを取得
@@ -46,15 +45,20 @@ fn main() -> io::Result<()> {
         let space = args.space.chars().next().unwrap_or('　');
 
         // text の各文字についてビットマップを取得
-        let bitmaps: Vec<_> = args.text.chars().filter_map(|c| {
-            match bdf.get_bitmap(c as u32) {
+        let bitmaps: Vec<_> = args
+            .text
+            .chars()
+            .filter_map(|c| match bdf.get_bitmap(c as u32) {
                 Some(bitmap) => Some(bitmap),
                 None => {
-                    eprintln!("Warning: Character '{}' (U+{:04X}) not found in BDF.", c, c as u32);
+                    eprintln!(
+                        "Warning: Character '{}' (U+{:04X}) not found in BDF.",
+                        c, c as u32
+                    );
                     None
                 }
-            }
-        }).collect();
+            })
+            .collect();
 
         if bitmaps.is_empty() {
             eprintln!("No valid characters found.");
@@ -63,7 +67,8 @@ fn main() -> io::Result<()> {
 
         // 取得したビットマップを連結し、レンダリングして出力
         let concatenated_bitmap = concat_bitmaps(bitmaps);
-        let rendered_text = render_bitmap(&concatenated_bitmap, &pixel.to_string(), &space.to_string());
+        let rendered_text =
+            render_bitmap(&concatenated_bitmap, &pixel.to_string(), &space.to_string());
         println!("{}", rendered_text);
     } else {
         eprintln!("BDF file not found");
