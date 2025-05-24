@@ -10,7 +10,7 @@ jobs:
     runs-on: macos-latest
 
     outputs:
-      VERSION: "v${{ steps.extract_version.outputs.VERSION }}"
+      VERSION: "${{ steps.extract_version.outputs.VERSION }}"
       SHASUM: ${{ steps.package_binary.outputs.SHASUM }}
 
     permissions:
