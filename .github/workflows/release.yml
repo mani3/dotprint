@@ -23,26 +23,29 @@ jobs:
           override: true
 
       - name: Extract version
+        id: extract_version
         run: |
           VERSION=$(grep '^version =' Cargo.toml | head -1 | sed -E 's/.*"([0-9.]+)".*/\1/')
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "VERSION: $VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Build binary
         run: cargo build --release
 
       - name: Package binary
+        id: package_binary
         run: |
           cd target/release
-          tar -czf dotprint-${{ env.VERSION }}-x86_64-apple-darwin.tar.gz dotprint
-          SHASUM=$(shasum -a 256 dotprint-${{ env.VERSION }}-x86_64-apple-darwin.tar.gz | awk '{print $1}')
+          tar -czf dotprint-${{ steps.extract_version.outputs.VERSION }}-x86_64-apple-darwin.tar.gz dotprint
+          SHASUM=$(shasum -a 256 dotprint-${{ steps.extract_version.outputs.VERSION }}-x86_64-apple-darwin.tar.gz | awk '{print $1}')
           echo "SHA256: $SHASUM"
-          echo "SHASUM=$SHASUM" >> $GITHUB_ENV
+          echo "SHASUM=$SHASUM" >> $GITHUB_OUTPUT
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ env.VERSION }}
-          files: target/release/dotprint-${{ env.VERSION }}-x86_64-apple-darwin.tar.gz
+          tag_name: ${{ steps.extract_version.outputs.VERSION }}
+          files: target/release/dotprint-${{ steps.extract_version.outputs.VERSION }}-x86_64-apple-darwin.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -62,10 +65,11 @@ jobs:
         run: |
           cd tap/Formula
           FORMULA_FILE=dotprint.rb
-          sed -i '' -E "s|url \".*\"|url \"https://github.com/mani3/homebrew-dotprint/releases/download/v${{ env.VERSION }}/dotprint-${{ env.VERSION }}-x86_64-apple-darwin.tar.gz\"|" $FORMULA_FILE
-          sed -i '' -E "s|sha256 \".*\"|sha256 \"${{ env.SHASUM }}\"|" $FORMULA_FILE
+          sed -i '' -E "s|url \".*\"|url \"https://github.com/mani3/dotprint/releases/download/${{ steps.extract_version.outputs.VERSION }}/dotprint-${{ steps.extract_version.outputs.VERSION }}-x86_64-apple-darwin.tar.gz\"|" $FORMULA_FILE
+          sed -i '' -E "s|sha256 \".*\"|sha256 \"${{ steps.package_binary.outputs.SHASUM }}\"|" $FORMULA_FILE
+          sed -i '' -E "s|version \".*\"|version \"${{ steps.extract_version.outputs.VERSION }}\"|" $FORMULA_FILE
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add $FORMULA_FILE
-          git commit -m "Update dotprint formula to ${{ env.VERSION }}"
+          git commit -m "Update dotprint formula to ${{ steps.extract_version.outputs.VERSION }}"
           git push origin main
