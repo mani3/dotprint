@@ -1,6 +1,6 @@
 [package]
 name = "dotprint"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 rust-embed = "8.4.0"
 bdf_parser = { git = "https://github.com/mani3/bdf_parser" }
+clap = { version = "4.5.36", features = ["derive"] }
