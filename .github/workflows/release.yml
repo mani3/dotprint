@@ -9,6 +9,10 @@ jobs:
   build-and-release:
     runs-on: macos-latest
 
+    outputs:
+      VERSION: "v${{ steps.extract_version.outputs.VERSION }}"
+      SHASUM: ${{ steps.package_binary.outputs.SHASUM }}
+
     permissions:
       contents: write
 
@@ -65,11 +69,11 @@ jobs:
         run: |
           cd tap/Formula
           FORMULA_FILE=dotprint.rb
-          sed -i '' -E "s|url \".*\"|url \"https://github.com/mani3/dotprint/releases/download/${{ steps.extract_version.outputs.VERSION }}/dotprint-${{ steps.extract_version.outputs.VERSION }}-x86_64-apple-darwin.tar.gz\"|" $FORMULA_FILE
-          sed -i '' -E "s|sha256 \".*\"|sha256 \"${{ steps.package_binary.outputs.SHASUM }}\"|" $FORMULA_FILE
-          sed -i '' -E "s|version \".*\"|version \"${{ steps.extract_version.outputs.VERSION }}\"|" $FORMULA_FILE
+          sed -i '' -E "s|url \".*\"|url \"https://github.com/mani3/dotprint/releases/download/${{ needs.build-and-release.outputs.VERSION }}/dotprint-${{ needs.build-and-release.outputs.VERSION }}-x86_64-apple-darwin.tar.gz\"|" $FORMULA_FILE
+          sed -i '' -E "s|sha256 \".*\"|sha256 \"${{ needs.build-and-release.outputs.SHASUM }}\"|" $FORMULA_FILE
+          sed -i '' -E "s|version \".*\"|version \"${{ needs.build-and-release.outputs.VERSION }}\"|" $FORMULA_FILE
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add $FORMULA_FILE
-          git commit -m "Update dotprint formula to ${{ steps.extract_version.outputs.VERSION }}"
+          git commit -m "Update dotprint formula to ${{ needs.build-and-release.outputs.VERSION }}"
           git push origin main
