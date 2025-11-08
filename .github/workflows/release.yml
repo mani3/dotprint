@@ -56,6 +56,8 @@ jobs:
   update-homebrew:
     runs-on: macos-latest
     needs: build-and-release
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout homebrew-tap repo
