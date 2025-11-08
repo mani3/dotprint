@@ -7,8 +7,7 @@ updates:
       day: monday
       time: "10:00"
       timezone: Asia/Tokyo
-    security-updates: true
-    open-pull-requests-limit: 8
+    open-pull-requests-limit: 10
     allow:
       - dependency-type: direct
     ignore:
@@ -18,7 +17,19 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "sqlx*"
         update-types: ["version-update:semver-major"]
+    groups:
+      core:
+        patterns: ["tokio*", "serde*", "sqlx*", "anyhow", "thiserror"]
+        update-types: ["minor", "patch"]
+      rest:
+        patterns: ["*"]
+        exclude-patterns: ["tokio*", "serde*", "sqlx*", "anyhow", "thiserror"]
+        update-types: ["minor", "patch"]
     labels: ["dependencies", "rust", "automerge-candidate"]
+    commit-message:
+      prefix: "deps(rs)"
+      include: scope
+    rebase-strategy: auto
 
   - package-ecosystem: github-actions
     directory: /
@@ -27,10 +38,13 @@ updates:
       day: monday
       time: "10:00"
       timezone: Asia/Tokyo
-    security-updates: true
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 5
     groups:
       actions:
         patterns: ["*"]
         update-types: ["minor", "patch"]
     labels: ["dependencies", "ci", "automerge-candidate"]
+    commit-message:
+      prefix: "deps(gha)"
+      include: scope
+    rebase-strategy: auto
