@@ -55,7 +55,7 @@ dependencies = [
 [[package]]
 name = "bdf_parser"
 version = "0.1.0"
-source = "git+https://github.com/mani3/bdf_parser#82343e027d5300d2c450ce74b26ee196f71113f3"
+source = "git+https://github.com/mani3/bdf_parser#4379977166be7ee1a1bf81851b12955f579da8e7"
 
 [[package]]
 name = "block-buffer"
