@@ -1,0 +1,36 @@
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "10:00"
+      timezone: Asia/Tokyo
+    security-updates: true
+    open-pull-requests-limit: 8
+    allow:
+      - dependency-type: direct
+    ignore:
+      - dependency-name: "tokio*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "serde*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "sqlx*"
+        update-types: ["version-update:semver-major"]
+    labels: ["dependencies", "rust", "automerge-candidate"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "10:00"
+      timezone: Asia/Tokyo
+    security-updates: true
+    open-pull-requests-limit: 3
+    groups:
+      actions:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    labels: ["dependencies", "ci", "automerge-candidate"]
