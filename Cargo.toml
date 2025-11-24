@@ -8,4 +8,4 @@ edition = "2021"
 [dependencies]
 rust-embed = "8.9.0"
 bdf_parser = { git = "https://github.com/mani3/bdf_parser" }
-clap = { version = "4.5.51", features = ["derive"] }
+clap = { version = "4.5.53", features = ["derive"] }
